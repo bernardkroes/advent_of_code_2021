@@ -4,13 +4,10 @@ hor_pos = depth = 0
 all_lines.each do |line|
   cmd, count_string = line.split(" ")
   count = count_string.to_i
-  if cmd == "forward"
-    hor_pos += count
-  elsif cmd == "down"
-    depth += count
-  elsif cmd == "up"
-    depth -= count
-  end
+
+  hor_pos += count if cmd == "forward"
+  depth += count if cmd == "down"
+  depth -= count if cmd == "up"
 end
 puts hor_pos * depth
 
@@ -18,14 +15,13 @@ hor_pos = depth = aim = 0
 all_lines.each do |line|
   cmd, count_string = line.split(" ")
   count = count_string.to_i
+
   if cmd == "forward"
     hor_pos += count
     depth += (count * aim)
-  elsif cmd == "down"
-    aim += count
-  elsif cmd == "up"
-    aim -= count
   end
+  aim += count if cmd == "down"
+  aim -= count if cmd == "up"
 end
 puts hor_pos * depth
 
