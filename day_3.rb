@@ -6,7 +6,7 @@ gamma = epsilon = ""
 the_line_length.times do |i|
   zero_count = all_lines.count { |l| l[i] == "0" }
   one_count = all_lines.count { |l| l[i] == "1" }
-  if zero_count > one_count
+  if zero_count > one_count # assuming that there are no ties
     gamma += "0"
     epsilon += "1"
   else 
