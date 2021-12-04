@@ -40,8 +40,8 @@ all_boards = []
 
 the_board_numbers = []
 all_lines[2..-1].each_with_index do |line,i|
-  if line.length == 0 || i == all_lines.size # last line is empty (in my input)
-    all_boards << Board.new(the_board_numbers.clone)
+  if line.length == 0
+    all_boards << Board.new(the_board_numbers)
     the_board_numbers = []
   else
     the_board_numbers += line.gsub(/\s+/," ").split(" ").map(&:to_i)
@@ -50,23 +50,23 @@ end
 
 # part 2
 the_draw_size = 5
-while !all_boards.any?{ |b| b.has_bingo?(draw_numbers[0..(the_draw_size-1)]) }
+while !all_boards.any?{ |b| b.has_bingo?(draw_numbers.first(the_draw_size)) }
   the_draw_size += 1
 end
-the_board = all_boards.find { |b| b.has_bingo?(draw_numbers[0..(the_draw_size-1)]) }
-puts the_board.score(draw_numbers[0..(the_draw_size-1)])
+the_board = all_boards.find { |b| b.has_bingo?(draw_numbers.first(the_draw_size)) }
+puts the_board.score(draw_numbers.first(the_draw_size))
 
 # part 2
 the_draw_size = 5
-draw_sizes = [0] * all_boards.size
-while !all_boards.all?{ |b| b.has_bingo?(draw_numbers[0..(the_draw_size-1)]) }
+draw_counts_for_bingo = [0] * all_boards.size
+while !all_boards.all?{ |b| b.has_bingo?(draw_numbers.first(the_draw_size)) }
   all_boards.each_with_index do |b,i|
-    if draw_sizes[i] == 0 && b.has_bingo?(draw_numbers[0..(the_draw_size-1)])
-      draw_sizes[i] = the_draw_size
+    if draw_counts_for_bingo[i] == 0 && b.has_bingo?(draw_numbers.first(the_draw_size))
+      draw_counts_for_bingo[i] = the_draw_size
     end
   end
   the_draw_size += 1
 end
-# find last board (still has a zero in draw_sizes)
-the_index = draw_sizes.find_index { |d| d == 0 }
-puts all_boards[the_index].score(draw_numbers[0..(the_draw_size-1)])
+# find last board (still has a zero in draw_counts_for_bingo)
+the_index = draw_counts_for_bingo.find_index { |d| d == 0 }
+puts all_boards[the_index].score(draw_numbers.first(the_draw_size))
