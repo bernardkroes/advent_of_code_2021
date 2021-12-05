@@ -20,20 +20,17 @@ class Grid
       elsif y1 == y2
         [x1,x2].min.upto([x1,x2].max) { |x| @map[y1][x] += 1 }
       elsif do_part2 # part 2 : diagonal lines
+        start_y, end_y = y1, y2
+        start_x = x1
+        delta_x = x2 > x1 ? 1 : -1
+
         if y1 > y2
-          x = x2
-          delta_x = x2 > x1 ? -1 : 1
-          y2.upto(y1) do |y|
-            @map[y][x] += 1
-            x += delta_x
-          end
-        else
-          x = x1
-          delta_x = (x1 > x2 ? -1 : 1)
-          y1.upto(y2) do |y|
-            @map[y][x] += 1
-            x += delta_x
-          end
+          start_y, end_y = y2, y1
+          start_x = x2
+          delta_x = x1 > x2 ? 1 : -1
+        end
+        (end_y - start_y + 1).times do |i|
+          @map[start_y + i][start_x + i * delta_x] += 1
         end
       end
     end
