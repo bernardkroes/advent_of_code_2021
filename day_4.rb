@@ -48,7 +48,7 @@ all_lines[2..-1].each_with_index do |line,i|
   end
 end
 
-# part 2
+# part 1
 the_draw_size = 5
 while !all_boards.any?{ |b| b.has_bingo?(draw_numbers.first(the_draw_size)) }
   the_draw_size += 1
