@@ -21,8 +21,7 @@ day_counts = []
 end
 
 256.times do |d|
- new_fish_count = day_counts[0]
  day_counts = day_counts.rotate
- day_counts[6] += new_fish_count
+ day_counts[6] += day_counts[8]
 end
 puts day_counts.sum
