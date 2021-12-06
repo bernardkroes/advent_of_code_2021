@@ -21,7 +21,7 @@ day_counts = []
 end
 
 256.times do |d|
-  day_counts = day_counts.rotate
+  day_counts.rotate!
   day_counts[6] += day_counts[8]
 
   # or one-line:
