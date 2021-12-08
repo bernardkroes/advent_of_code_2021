@@ -23,10 +23,14 @@ all_lines.each do |line|
   sorted_outputs = outputs.split(" ").map(&:chars).map(&:sort).map(&:join)
 
   # start reasoning
-  # by length 2,4,3,7 => 1, 4, 7, 8
   sorted_inputs.each_with_index do |k,i|
-    if k.length == 2
-      values[i] = 1
+    # by length 2,4,3,7 => 1, 4, 7, 8
+    values[i] = 4 if k.length == 4
+    values[i] = 7 if k.length == 3
+    values[i] = 8 if k.length == 7
+    values[i] = 1 if k.length == 2
+
+    if k.length == 2 # dive in
       sorted_inputs.each_with_index do |other_k,j|
         # subtracting 1 from 3 (length 5 only) leaves 3 on's
         if other_k.length == 5 && (other_k.chars - k.chars).length == 3
@@ -48,9 +52,6 @@ all_lines.each do |line|
         end
       end
     end
-    values[i] = 4 if k.length == 4
-    values[i] = 7 if k.length == 3
-    values[i] = 8 if k.length == 7
   end
   # remaining of length 6 -> 0
   # remaining of length 5 -> 2
