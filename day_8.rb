@@ -35,19 +35,13 @@ all_lines.each do |line|
         # subtracting 1 from 3 (length 5 only) leaves 3 on's
         if other_k.length == 5 && (other_k.chars - k.chars).length == 3
           values[j] = 3
-          sorted_inputs.each_with_index do |k3,jj|
-            # subtracting 3 from 9 (length 6 only) leaves 1 on
-            if k3.length == 6  && (k3.chars - other_k.chars).length == 1
-              values[jj] = 9
-            end
+          sorted_inputs.each_with_index do |k3,jj| # subtracting 3 from 9 (length 6 only) leaves 1 on
+            values[jj] = 9 if k3.length == 6 && (k3.chars - other_k.chars).length == 1
           end
         elsif other_k.length == 6 && (other_k.chars - k.chars).length == 5 # subtracting 1 from 6 (length 6 only) leaves 5 on's
           values[j] = 6
-          sorted_inputs.each_with_index do |k3,jj|
-            # subtracting 5 from 6 (length 5 only) leaves 1 on
-            if k3.length == 5 && (other_k.chars - k3.chars).length == 1
-              values[jj] = 5
-            end
+          sorted_inputs.each_with_index do |k3,jj| # subtracting 5 from 6 (length 5 only) leaves 1 on
+            values[jj] = 5 if k3.length == 5 && (other_k.chars - k3.chars).length == 1
           end
         end
       end
