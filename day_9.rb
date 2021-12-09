@@ -1,3 +1,5 @@
+require 'set'
+
 class HeightMap
   attr_reader :size_x, :size_y
 
@@ -44,13 +46,9 @@ class HeightMap
     total
   end
 
-  def key_for(x,y)
-    "#{x}_#{y}"
-  end
-
   def add_to_basin(in_basin, x, y)
-    return if in_basin.has_key?(key_for(x,y))
-    in_basin[key_for(x,y)] = 1
+    return if in_basin.include?([x,y])
+    in_basin.add([x,y])
 
     DELTA_MOVES.each do |move|
       delta_x, delta_y = move[0], move[1]
@@ -62,7 +60,7 @@ class HeightMap
   end
 
   def get_basin_size(x,y)
-    the_basin = {}
+    the_basin = Set.new
     the_basin = add_to_basin(the_basin, x, y)
     the_basin.length
   end
