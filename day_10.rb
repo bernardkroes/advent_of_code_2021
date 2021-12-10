@@ -29,43 +29,31 @@ def score_for_closing_char_matching(c)
   return 4 if c == "<"
 end
 
-total_score = 0
-error_lines = []
+part1_score = 0
+all_part2_scores = []
 all_lines.each_with_index do |line,l|
   the_stack = []
+  error_in_line = false
   line.chars.each_with_index do |c, i|
     if is_opening_char?(c)
       the_stack.push(c)
     elsif is_closing_char?(c)
       opening_char = the_stack.pop
       if !matching_pair?(opening_char, c)
-        total_score += score_for_char(c)
-        error_lines << l
+        part1_score += score_for_char(c)
+        error_in_line = true
         break
       end
     end
   end
-end
-puts total_score
-
-# part 2
-all_scores = []
-all_lines.each_with_index do |line,l|
-  if !error_lines.include?(l)
-    the_stack = []
-    line.chars.each_with_index do |c, i|
-      if is_opening_char?(c)
-        the_stack.push(c)
-      elsif is_closing_char?(c)
-        the_stack.pop
-      end
-    end
-    # autocomplete scoring
+  # part 2 scoring
+  if !error_in_line
     line_score = 0
     while the_stack.length > 0
       line_score = line_score * 5 + score_for_closing_char_matching(the_stack.pop)
     end
-    all_scores << line_score
+    all_part2_scores << line_score
   end
 end
-puts all_scores.sort[(all_scores.length - 1)/2]
+puts part1_score
+puts all_part2_scores.sort[(all_part2_scores.length - 1)/2]
