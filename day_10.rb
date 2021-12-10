@@ -1,7 +1,7 @@
 all_lines = File.read('day_10_input.txt').split("\n")
 
-OPENING_CHARS = "([<{"
-CLOSING_CHARS = ")]>}"
+OPENING_CHARS = "([{<".chars
+CLOSING_CHARS = ")]}>".chars
 
 def is_opening_char?(c)
   OPENING_CHARS.include?(c)
@@ -12,21 +12,15 @@ def is_closing_char?(c)
 end
 
 def matching_pair?(opening_char, closing_char)
-  OPENING_CHARS.chars.find_index(opening_char) == CLOSING_CHARS.chars.find_index(closing_char)
+  OPENING_CHARS.find_index(opening_char) == CLOSING_CHARS.find_index(closing_char)
 end
 
 def score_for_char(c)
-  return 3 if c == ")"
-  return 57 if c == "]"
-  return 1197 if c == "}"
-  return 25137 if c == ">"
+  [3, 57, 1197, 25137][CLOSING_CHARS.find_index(c)]
 end
 
 def score_for_closing_char_matching(c)
-  return 1 if c == "("
-  return 2 if c == "["
-  return 3 if c == "{"
-  return 4 if c == "<"
+  [1, 2, 3, 4][OPENING_CHARS.find_index(c)]
 end
 
 part1_score = 0
@@ -56,4 +50,4 @@ all_lines.each_with_index do |line,l|
   end
 end
 puts part1_score
-puts all_part2_scores.sort[(all_part2_scores.length - 1)/2]
+puts all_part2_scores.sort[all_part2_scores.length/2]
