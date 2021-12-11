@@ -64,7 +64,20 @@ class OctoMap
   def show_flashed_map
     puts "\e[H\e[2J" # clear the terminal for more fun
     @octo_map.each do |line|
-      puts line.map(&:to_s).join.gsub(/[1-9]/,"-").gsub("0","#")
+      line_string = ""
+      line.each do |v|
+        if v > 6
+          line_string +="\033[0;32m#{v}\033[0m"
+        elsif v > 3
+          line_string +="\033[0;37m#{v}\033[0m"
+        elsif v > 0
+          line_string +="\033[0;33m#{v}\033[0m"
+        else
+          line_string +="\033[1;33m0\033[0m"
+        end
+      end
+      puts line_string
+#      puts line.map(&:to_s).join.gsub(/[1-9]/,"-").gsub("0","#")
     end
     sleep(1.0/24.0)
   end
@@ -84,7 +97,7 @@ flash_count = step = 0
 while flash_count < 100
   flash_count = the_octo_map.take_step
   step += 1
-  # the_octo_map.show_flashed_map
+  the_octo_map.show_flashed_map
 end
 puts step
 
