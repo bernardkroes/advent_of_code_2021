@@ -31,7 +31,7 @@ class CaveMap
     true
   end
 
-  # not that all found routes are collecte in the all_routes param and returned for convenience
+  # note that all found routes are collecte in the all_routes param and returned for convenience
   def find_all_routes(all_routes, current_route, destination)
     current_node = current_route[-1]
     if current_node == destination
@@ -39,8 +39,8 @@ class CaveMap
       return all_routes
     end
 
-    candidate_caves = @all_caves[current_node]
-    candidate_caves.select { |next_cave| can_go_to?(current_route, next_cave) }.each do |next_cave|
+    next_caves = @all_caves[current_node].select { |next_cave| can_go_to?(current_route, next_cave) }
+    next_caves.each do |next_cave|
       find_all_routes(all_routes, current_route + [next_cave], destination)
     end
     all_routes
