@@ -13,46 +13,36 @@ class CaveMap
     in_cave.downcase == in_cave
   end
 
-  def can_go_to_part1?(in_route, in_dest)
-    if is_small_cave?(in_dest) && in_route.include?(in_dest)
-      return false
-    end
-    true
-  end
-
   def can_go_to?(in_route, in_dest)
     return false if in_dest == "start"
+    return true if !is_small_cave?(in_dest)
+    return true if in_route.count { |c| c == in_dest } == 0
 
-    if is_small_cave?(in_dest)
-      # count all small caves in the route:
-      small_cave_counts = Hash.new(0)
-      in_route.each do |cave|
-        small_cave_counts[cave] += 1 if is_small_cave?(cave)
-      end
-      if small_cave_counts[in_dest] > 0 && small_cave_counts.any? { |k,v| v == 2 }
-        return false
-      end
+    # part 1
+    # return false
+
+    # part two conditions:
+    # return false if any small cave occurs twice
+    small_cave_counts = Hash.new(0)
+    in_route.select { |c| is_small_cave?(c) }.each do |cave|
+      small_cave_counts[cave] += 1
+      return false if small_cave_counts[cave] > 1
     end
     true
   end
 
-  def find_all_routes(all_routes, current_route)
+  def find_all_routes(all_routes, current_route, destination)
     current_node = current_route[-1]
-    candidate_caves = @all_caves[current_node]
+    return all_routes << current_route if current_node == destination
 
-    candidate_caves.each do |dest|
-      if can_go_to?(current_route, dest)
-        if dest == 'end'
-          all_routes << (current_route + [dest])
-        else
-          find_all_routes(all_routes, current_route + [dest])
-        end
-      end
+    candidate_caves = @all_caves[current_node]
+    candidate_caves.select { |next_cave| can_go_to?(current_route, next_cave) }.each do |next_cave|
+      find_all_routes(all_routes, current_route + [next_cave], destination)
     end
     all_routes
   end
 end
 
 the_cave_map = CaveMap.new('day_12_input.txt')
-all_routes = the_cave_map.find_all_routes([], ['start'])
+all_routes = the_cave_map.find_all_routes([], ['start'], "end")
 puts all_routes.length
