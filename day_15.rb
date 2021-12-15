@@ -61,7 +61,7 @@ class ChitonMap
         if on_map?(walk_x, walk_y) && !visited.has_key?(key_for(walk_x, walk_y))
           if dist_map[y][x] + @the_map[walk_y][walk_x] < dist_map[walk_y][walk_x]
             dist_map[walk_y][walk_x] = dist_map[y][x] + @the_map[walk_y][walk_x]
-            min_remaining_dist[key_for(walk_x, walk_y)] = dist_map[y][x] + @the_map[walk_y][walk_x]
+            min_remaining_dist[key_for(walk_x, walk_y)] = dist_map[walk_y][walk_x]
           end
         end
       end
