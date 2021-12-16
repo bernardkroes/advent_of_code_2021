@@ -24,11 +24,7 @@ class Packet
   end
 
   def sum_versions
-    sum = @version
-    @subpackets.each do |sp|
-      sum += sp.sum_versions
-    end
-    sum
+    @version + @subpackets.collect { |c| c.sum_versions }.sum
   end
 
   def calculate_value
