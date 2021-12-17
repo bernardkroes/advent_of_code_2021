@@ -94,7 +94,7 @@ def parse(in_string)
       num_subpackets = in_string[the_start..(the_start + num_length_bits - 1)].to_i(2)
       the_start += num_length_bits
 
-      num_subpackets.times do |sp|
+      num_subpackets.times do
         sub_packet, the_num_read = parse(in_string[the_start..-1])
         p.subpackets << sub_packet
         the_start += the_num_read
