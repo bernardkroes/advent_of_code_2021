@@ -5,7 +5,7 @@ def in_target_area?(x,y)
 end
 
 def next_path_elem_for(pos_x, pos_y, vel_x, vel_y)
-  [pos_x + vel_x, pos_y + vel_y, vel_x + -1 * (vel_x <=> 0), vel_y - 1] # spaceship operator to determine sign(x): -1/0/1
+  [pos_x + vel_x, pos_y + vel_y, vel_x + (0 <=> vel_x), vel_y - 1] # spaceship operator to determine sign(x): -1/0/1
 end
 
 # use some reasonalbe starting values and bounds
