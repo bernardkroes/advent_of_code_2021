@@ -1,19 +1,18 @@
 # target area: x=241..273, y=-97..-63 => hard code it
 
-def in_target_area?(x,y)
-  x >= 241 && x <= 273 && y >= -97 && y <= -63
-end
-
 def next_path_elem_for(pos_x, pos_y, vel_x, vel_y)
   [pos_x + vel_x, pos_y + vel_y, vel_x + (0 <=> vel_x), vel_y - 1] # spaceship operator to determine sign(x): -1/0/1
 end
 
-# use some reasonalbe starting values and bounds
+target_x_min, target_x_max = 241, 273
+target_y_min, target_y_max = -97, -63
+
 max_y = 0
 num_hits = 0
 
-274.downto(1) do |start_vel_x|      # 241 for part 1
-  273.downto(-273) do |start_vel_y| # downto 1 for part 1
+# use some reasonable starting values and bounds
+target_x_max.downto(Math.sqrt(target_x_min)) do |start_vel_x|
+  (-1 * target_y_min).downto(target_y_min) do |start_vel_y|
     pos_x, pos_y = 0, 0
 
     the_path = []
@@ -24,17 +23,18 @@ num_hits = 0
       the_path << the_path_elem
 
       should_break = false
-      if in_target_area?(the_path_elem[0], the_path_elem[1])
+      x, y = the_path_elem[0], the_path_elem[1]
+      if x >= target_x_min && x <= target_x_max && y >= target_y_min && y <= target_y_max
         path_max_y = the_path.collect { |e| e[1] }.max
         max_y = path_max_y if path_max_y > max_y
         num_hits += 1
         should_break = true
       end
 
-      should_break = true if the_path_elem[1] < -97
-      should_break = true if the_path_elem[0] > 273
+      should_break = true if the_path_elem[1] < target_y_min
+      should_break = true if the_path_elem[0] > target_x_max
       if the_path_elem[2] == 0 # vel_x
-        should_break = true if (the_path_elem[0] < 241) # > 273 and y < -97 already dealt with
+        should_break = true if (the_path_elem[0] < target_x_min) # > target_x_max and y < target_y_min already dealt with
       end
       break if should_break
     end
