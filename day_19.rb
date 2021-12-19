@@ -17,6 +17,21 @@ class Scanner
     @fixated = false
   end
 
+  def distance_matrix
+    return @all_distances if defined?(@all_distances)
+
+    @all_distances = []
+    @beacons.each do |b1|
+      row = []
+      @beacons.each do |b2|
+        the_dist = (b2[0] - b1[0]) * (b2[0] - b1[0]) + (b2[1] - b1[1]) * (b2[1] - b1[1]) + (b2[2] - b1[2]) * (b2[2] - b1[2])
+        row << the_dist
+      end
+      @all_distances << row
+    end
+    @all_distances
+  end
+
   def beacon_count
     @beacons.length
   end
@@ -91,6 +106,21 @@ all_lines.each do |line|
   end
 end
 
+matches = {}
+scanners.each do |scanner|
+  scanners.each do |cand|
+    if scanner.id != cand.id
+      if (scanner.distance_matrix.flatten & cand.distance_matrix.flatten).length >= 66 # 12 distance-pairs should match: (12 * 11)/2 = 66
+        if matches.has_key?(scanner.id)
+          matches[scanner.id] << cand.id
+        else
+          matches[scanner.id] = [cand.id]
+        end
+      end
+    end
+  end
+end
+
 # fix all the positions and orientations
 scanners[0].fixate([0, 0, 0], Matrix[ [1,0,0], [0,1,0], [0,0,1]])
 scanners_tried = []
@@ -107,7 +137,7 @@ end
 
 while scanners.count { |sc| !sc.fixated } > 0
   scanners.select { |sc| sc.fixated && !scanners_tried.include?(sc.id) }.each do |scanner|
-    scanners.select { |sc| !sc.fixated }.each do |cand|
+    scanners.select { |sc| !sc.fixated && matches[scanner.id].include?(sc.id) }.each do |cand|
       was_fixated = false
 
       scanner.beacon_count.times do |fpi|
