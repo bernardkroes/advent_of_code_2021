@@ -58,22 +58,10 @@ class Scanner
     @fixated_beacons
   end
 
-  def beacon_transformed_for_point(transl, mat, pi)
-    pos = @beacons[pi]
-    the_mat = mat * Vector.elements(pos).to_matrix
-    [transl[0] + the_mat.row(0)[0], transl[1] + the_mat.row(1)[0], transl[2] + the_mat.row(2)[0]]
-  end
-
   def beacons_transformed(transl, mat)
     @beacons.map do |pos|
       the_mat = mat * Vector.elements(pos).to_matrix
       [transl[0] + the_mat.row(0)[0], transl[1] + the_mat.row(1)[0], transl[2] + the_mat.row(2)[0]]
-    end
-  end
-
-  def beacons_transformed_cached(transl, cache)
-    @beacons.each_with_index.map do |pos,i|
-      [transl[0] + cache[i][0], transl[1] + cache[i][1], transl[2] + cache[i][2]]
     end
   end
 
@@ -126,15 +114,6 @@ scanners[0].fixate([0, 0, 0], Matrix[ [1,0,0], [0,1,0], [0,0,1]])
 scanners_tried = []
 all_transforms = all_transformation_matrices
 
-# cache for better (but still too slow)
-cached_beacons = {}
-all_transforms.each_with_index do |mat, mat_i|
-  scanners.each do |scanner|
-    the_key = "#{scanner.id}_#{mat_i}"
-    cached_beacons[the_key] = scanner.beacons_transformed([0, 0, 0], mat)
-  end
-end
-
 while scanners.count { |sc| !sc.fixated } > 0
   scanners.select { |sc| sc.fixated && !scanners_tried.include?(sc.id) }.each do |scanner|
     scanners.select { |sc| !sc.fixated && matches[scanner.id].include?(sc.id) }.each do |cand|
@@ -144,12 +123,11 @@ while scanners.count { |sc| !sc.fixated } > 0
         cand.beacon_count.times do |spi|
           fp = scanner.get_beacons[fpi]
 
-          all_transforms.each_with_index do |mat, mat_i|
-            sp = cand.beacon_transformed_for_point([0, 0, 0], mat, spi)
+          all_transforms.each_with_index do |mat|
+            sp = cand.beacons_transformed([0, 0, 0], mat)[spi]
             dp = [fp[0] - sp[0], fp[1] - sp[1], fp[2] - sp[2]]
 
-            the_cache_key = "#{cand.id}_#{mat_i}"
-            overlap_count = (scanner.get_beacons & cand.beacons_transformed_cached(dp, cached_beacons[the_cache_key])).length
+            overlap_count = (scanner.get_beacons & cand.beacons_transformed(dp, mat)).length
             if overlap_count > 11
               cand.fixate(dp, mat)
               was_fixated = true
