@@ -27,7 +27,11 @@ end
 puts num_throws * [s1, s2].min
 
 # part 2
+p1 = 6 - 1
+p2 = 4 - 1
+
 CACHED = {}
+# it is always the turn of pos1
 def count_wins(pos1, pos2, score1, score2)
   return [1,0] if score1 >= 21
   return [0,1] if score2 >= 21
@@ -42,7 +46,9 @@ def count_wins(pos1, pos2, score1, score2)
         new_pos1 = (pos1 + r1 + r2 + r3) % 10
         new_s1 = score1 + new_pos1 + 1
 
+        # switch to other player
         sub_w1, sub_w2 = count_wins(pos2, new_pos1, score2, new_s1)
+        # and add to the matching win count
         sub_win_counts[0] += sub_w2
         sub_win_counts[1] += sub_w1
       end
@@ -52,4 +58,4 @@ def count_wins(pos1, pos2, score1, score2)
   return sub_win_counts
 end
 
-puts count_wins(5,3,0,0).max
+puts count_wins(p1,p2,0,0).max
