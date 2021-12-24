@@ -23,14 +23,11 @@ class CaveMap
   end
 
   def steps_for_move(from_x, from_y, dest_x, dest_y)
-    if is_in_hallway?(from_x, from_y) # manhattan distance
-      return (dest_x - from_x).abs + (dest_y - from_y).abs
-    end
-    if is_in_hallway?(dest_x, dest_y) # manhattan distance
+    if is_in_hallway?(from_x, from_y) || is_in_hallway?(dest_x, dest_y) # manhattan distance
       return (dest_x - from_x).abs + (dest_y - from_y).abs
     end
     # from cave to cave
-    return (from_y - 1) + (dest_y - 1) + (dest_x - from_x).abs
+    (from_y - 1) + (dest_y - 1) + (dest_x - from_x).abs
   end
 
   def route_clear?(from_x, from_y, dest_x, dest_y)
@@ -54,6 +51,10 @@ class CaveMap
     true
   end
 
+  def dest_cave_does_not_contain_wrong_amphipod?(in_dest_cave, letter) # dest_cave does not contain wrong amphipods
+    in_dest_cave.all? { |p| [".", letter].include?(at(p[0],p[1])) }
+  end
+
   # the monster
   def all_possible_moves
     moves = [] # [from_x, from_y, dest_x, dest_y, letter, steps]
@@ -64,16 +65,17 @@ class CaveMap
       letter = at(from_x, from_y)
       dest_cave = dest_cave_for(letter)
       already_in_cave = dest_cave.any? { |p| p[0] == from_x && p[1] == from_y }
+      dest_cave_ok = dest_cave_does_not_contain_wrong_amphipod?(dest_cave, letter)
 
-      should_move = !already_in_cave || (already_in_cave && (from_y.upto(5).any? { |y| at(from_x,y) != letter } )) # p1: upto(3)
-      if should_move
+      should_stay_in_cave = already_in_cave && dest_cave_ok
+      added_dest_cave_move = false
+      if !should_stay_in_cave
         # to dest_cave?
-        added_dest_cave_move = false
-        if dest_cave.all? { |p| [".", letter].include?(at(p[0],p[1])) }
+        if dest_cave_ok
           dest_x, dest_y = last_empty_for(dest_cave)
           if dest_x && route_clear?(from_x, from_y, dest_x, dest_y)
-            added_dest_cave_move = true
             moves << [from_x, from_y, dest_x, dest_y, letter, steps_for_move(from_x, from_y, dest_x, dest_y)]
+            added_dest_cave_move = true
           end
         end
         # to any in hallway?
@@ -88,16 +90,15 @@ class CaveMap
       end
     end
     # from hallway to cave
-    hallway.each do |h|
+    hallway.select { |h| at(h[0], h[1]) != "." }.each do |h|
       from_x, from_y = h[0], h[1]
       letter = at(from_x, from_y)
-      if letter != '.'
-        dest_cave = dest_cave_for(letter)
-        if dest_cave.all? { |p| [".", letter].include?(at(p[0],p[1])) }
-          dest_x, dest_y = last_empty_for(dest_cave)
-          if dest_x && route_clear?(from_x, from_y, dest_x, dest_y)
-            moves << [from_x, from_y, dest_x, dest_y, letter, steps_for_move(from_x, from_y, dest_x, dest_y)]
-          end
+      dest_cave = dest_cave_for(letter)
+
+      if dest_cave_does_not_contain_wrong_amphipod?(dest_cave, letter)
+        dest_x, dest_y = last_empty_for(dest_cave)
+        if dest_x && route_clear?(from_x, from_y, dest_x, dest_y)
+          moves << [from_x, from_y, dest_x, dest_y, letter, steps_for_move(from_x, from_y, dest_x, dest_y)]
         end
       end
     end
@@ -132,23 +133,19 @@ class CaveMap
   end
 
   def caveA
-#    [ [3,2], [3,3] ]
-    [ [3,2], [3,3], [3,4], [3,5] ]
+    [ [3,2], [3,3], [3,4], [3,5] ] #    [ [3,2], [3,3] ]
   end
 
   def caveB
-#    [ [5,2], [5,3] ]
-    [ [5,2], [5,3], [5,4], [5,5] ]
+    [ [5,2], [5,3], [5,4], [5,5] ] #    [ [5,2], [5,3] ]
   end
 
   def caveC
-#    [ [7,2], [7,3] ]
-    [ [7,2], [7,3], [7,4], [7,5] ]
+    [ [7,2], [7,3], [7,4], [7,5] ] #    [ [7,2], [7,3] ]
   end
 
   def caveD
-#    [ [9,2], [9,3] ]
-    [ [9,2], [9,3], [9,4], [9,5] ]
+    [ [9,2], [9,3], [9,4], [9,5] ] #    [ [9,2], [9,3] ]
   end
 
   def all_caves
@@ -209,6 +206,7 @@ def min_costs(the_map)
     end
     the_map.revert_move(m)
   end
+
   the_map.all_possible_moves.each do |m|
     the_map.do_move(m)
     the_costs = the_map.costs_for_move(m) + min_costs(the_map)

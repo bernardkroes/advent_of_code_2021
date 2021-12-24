@@ -1,6 +1,3 @@
-# all_entries = File.read('day_24_input.txt').split("\n").map(&:to_i)
-all_lines = File.read('day_24_input.txt').split("\n")
-
 class Alu
   attr_accessor :regs
 
@@ -42,8 +39,7 @@ class Alu
   def runline(line, inputs)
     case line[0]
     when "inp"
-      arg = inputs.shift
-      setreg(line[1], arg)
+      setreg(line[1], inputs.shift)
     when "add"
       setreg(line[1], value_for(line[1]) + value_for(line[2]))
     when "mul"
@@ -67,7 +63,7 @@ end
 
 the_alu = Alu.new('day_24_input.txt')
 
-if false
+if false # part1
   9.downto(2) do |input0|
     input7 = input0 - 1
     4.downto(1) do |input1|
@@ -89,6 +85,7 @@ if false
                 if the_alu.regs["z"] == 0
                   puts the_alu.regs.inspect
                   puts orig_inputs.map(&:to_s).join
+                  exit
                 end
               end
             end
