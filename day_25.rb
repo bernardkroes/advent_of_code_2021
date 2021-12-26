@@ -9,32 +9,17 @@ class FloorMap
     @size_y = @the_map.size
   end
 
-  def on_map?(in_x, in_y)
-    in_x >= 0 && in_x < @size_x && in_y >= 0 && in_y < @size_y
-  end
-
-  def char_for(in_x, in_y)
-    return @default_char if !on_map?(in_x, in_y)
-    @the_map[in_y][in_x]
-  end
-
   def show_info
     puts @size_x
     puts @size_y
   end
 
   def is_occupied?(x, y)
-    check_x, check_y = x, y
-    check_y = 0 if y >= @size_y
-    check_x = 0 if x >= @size_x
-    @the_map[check_y][check_x] != "."
+    @the_map[y % @size_y][x % @size_x] != "."
   end
 
   def set_map(x, y, val)
-    the_x, the_y = x, y
-    the_y = 0 if y >= @size_y
-    the_x = 0 if x >= @size_x
-    @the_map[the_y][the_x] = val
+    @the_map[y % @size_y][x % @size_x] = val
   end
 
   def show_grid
